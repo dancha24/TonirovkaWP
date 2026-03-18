@@ -2,6 +2,12 @@
 node_modules/
 vendor/
 
+# WordPress: конфиг с паролями — не коммитить!
+wp-config.php
+
+# Логи
+wp-content/logs/
+
 # Системные файлы
 .DS_Store
 Thumbs.db
