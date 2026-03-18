@@ -1,0 +1,146 @@
+/* =====================================================
+   Global Settings — Admin Styles
+   inc/global-settings/admin.css
+   ===================================================== */
+
+.gs-wrap { max-width: 1100px; }
+
+.gs-page-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 22px !important;
+    margin-bottom: 24px !important;
+}
+.gs-page-title .dashicons { font-size: 26px; width: 26px; height: 26px; color: #2271b1; }
+
+/* Layout */
+.gs-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
+}
+@media (max-width: 960px) { .gs-layout { grid-template-columns: 1fr; } }
+
+/* Cards */
+.gs-card {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    padding: 28px 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.gs-card-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: #50575e;
+    margin: 0 0 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f1;
+}
+
+/* Fields */
+.gs-field-group { margin-bottom: 22px; }
+
+.gs-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d2327;
+    margin-bottom: 8px;
+}
+.gs-label .dashicons { color: #2271b1; font-size: 16px; width: 16px; height: 16px; }
+.gs-label-hint { font-size: 11px; font-weight: 400; color: #787c82; margin-left: 2px; }
+
+.gs-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #8c8f94;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1d2327;
+    background: #f6f7f7;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+    box-sizing: border-box;
+}
+.gs-input:focus {
+    outline: none;
+    border-color: #2271b1;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(34,113,177,.12);
+}
+.gs-textarea { resize: vertical; min-height: 80px; }
+
+/* Metrika textarea */
+.gs-field-group--metrika .gs-label { align-items: flex-start; flex-wrap: wrap; gap: 4px; }
+
+.gs-textarea--code {
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border-color: #313244;
+}
+.gs-textarea--code:focus {
+    background: #1e1e2e;
+    border-color: #89b4fa;
+    box-shadow: 0 0 0 3px rgba(137,180,250,.18);
+    color: #cdd6f4;
+}
+.gs-textarea--code::placeholder { color: #585b70; }
+
+.gs-field-hint { margin: 6px 0 0; font-size: 12px; color: #787c82; }
+.gs-field-hint code { background: #f0f0f1; padding: 1px 5px; border-radius: 3px; font-size: 11px; color: #c0392b; }
+
+/* Actions */
+.gs-actions { padding-top: 8px; border-top: 1px solid #f0f0f1; margin-top: 8px; }
+
+/* Buttons */
+.gs-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: all .15s;
+    line-height: 1.4;
+}
+.gs-btn .dashicons { font-size: 15px; width: 15px; height: 15px; }
+
+.gs-btn-primary { background: #2271b1; color: #fff; border-color: #2271b1; }
+.gs-btn-primary:hover { background: #135e96; border-color: #135e96; color: #fff; }
+
+.gs-btn-secondary { background: #f6f7f7; color: #1d2327; border-color: #dcdcde; }
+.gs-btn-secondary:hover { background: #f0f0f1; border-color: #8c8f94; color: #1d2327; }
+
+.gs-full { display: flex; width: 100%; margin-bottom: 10px; box-sizing: border-box; justify-content: flex-start; }
+.gs-full:last-child { margin-bottom: 0; }
+
+/* Sidebar usage card */
+.gs-shortcut-card { margin-bottom: 20px; }
+.gs-hint { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #50575e; margin: 4px 0 6px; }
+
+.gs-code {
+    display: block;
+    background: #f0f0f1;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    color: #c0392b;
+    margin-bottom: 5px;
+    user-select: all;
+}
