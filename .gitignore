@@ -1,15 +1,3 @@
-# WordPress config (содержит пароли и ключи — не коммитить!)
-wp-config.php
-
-# Загрузки (медиафайлы — специфичны для окружения)
-wp-content/uploads/
-
-# Логи и кэш
-wp-content/debug.log
-wp-content/advanced-cache.php
-wp-content/cache/
-*.log
-
 # Зависимости
 node_modules/
 vendor/
