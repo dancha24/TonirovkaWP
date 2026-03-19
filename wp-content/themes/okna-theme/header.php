@@ -21,12 +21,13 @@ if (!defined('ABSPATH')) {
         <header class="header" aria-label="Шапка сайта">
             <div class="container">
                 <div class="header__container">
-                    <div class="header__logo">
+                    <a href="#" class="header__logo" aria-label="Наверх">
                         <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/logo.png"
-                            alt="РћРєРЅРѕ РўСЋРЅРёРЅРі" class="header__logo-img">
-                    </div>
+                            alt="Окно Тюнинг" class="header__logo-img">
+                    </a>
 
                     <nav class="header__menu" id="menu" aria-label="Главное меню">
+                        <button type="button" class="header__menu-close js-menu-close" aria-label="Закрыть меню">×</button>
                         <?php
                         wp_nav_menu([
                             'menu_class' => 'header__list',
@@ -38,8 +39,8 @@ if (!defined('ABSPATH')) {
                     </nav>
                     <div class="header__actions">
                         <button type="button" class="button header__call-action header__call-action_calc js-consult-modal-open"
-                            data-da=".header__actions,480,first" data-strapi="headerCtaText" aria-label="Заказать консультацию">
-                            <span data-strapi="headerCtaText">Заказать консультацию</span>
+                            data-da=".header__actions,480,first" data-strapi="headerCtaText" aria-label="Заказать звонок">
+                            <span data-strapi="headerCtaText">Заказать звонок</span>
                         </button>
                         <a href="tel:<?php echo gs_phone(); ?>" class="header__phone" data-da="#menu,640,last"
                             data-strapi="headerPhoneLink">

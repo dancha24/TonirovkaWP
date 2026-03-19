@@ -199,9 +199,19 @@ $img = esc_url( get_template_directory_uri() ) . '/img/';
     <?php /* ════════════════════════════════════════════════════════ TYPES ══ */ ?>
     <section class="types types_cards">
         <div class="container">
-            <h2 class="types__title title2">
-                <?php fp_field( 'types_title', 'Типы пленок' ); ?>
-            </h2>
+            <div class="types__header">
+                <h2 class="types__title title2">
+                    <?php fp_field( 'types_title', 'Типы пленок' ); ?>
+                </h2>
+                <div class="types-slider-nav">
+                    <button type="button" class="types-slider-prev" aria-label="Предыдущий">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <button type="button" class="types-slider-next" aria-label="Следующий">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                </div>
+            </div>
             <div class="types-slider-wrap">
                 <div class="swiper types-slider" id="types-slider" aria-label="Карусель типов пленок">
                     <div class="swiper-wrapper">
@@ -288,9 +298,6 @@ $img = esc_url( get_template_directory_uri() ) . '/img/';
                         ?>
                     </ul>
                     <p class="about__intro"><?php fp_field( 'about_intro', '' ); ?></p>
-                    <a href="#calc" class="about__cta js-calc-modal-open">
-                        <?php fp_field( 'about_cta_text', 'Узнать стоимость' ); ?>
-                    </a>
                 </div>
 
                 <div class="about__before-after">
@@ -363,7 +370,7 @@ $img = esc_url( get_template_directory_uri() ) . '/img/';
                                 </label>
                                 <label class="checkbox">
                                     <input type="checkbox" name="telegram_pref" class="checkbox__input">
-                                    <span class="checkbox__text">Удобно в Telegram</span>
+                                    <span class="checkbox__text">Удобно в МАХ</span>
                                 </label>
                             </div>
                             <label class="checkbox measure-photo__agree">
@@ -544,9 +551,19 @@ $img = esc_url( get_template_directory_uri() ) . '/img/';
     <?php /* ═══════════════════════════════════════════════════════ CASES ══ */ ?>
     <section class="cases" id="cases">
         <div class="cases__container container">
-            <h2 class="cases__title title2">
-                <?php fp_field( 'cases_title', 'Кейсы' ); ?>
-            </h2>
+            <div class="cases__header">
+                <h2 class="cases__title title2">
+                    <?php fp_field( 'cases_title', 'Кейсы' ); ?>
+                </h2>
+                <div class="cases-slider-nav">
+                    <button type="button" class="cases-slider-prev" aria-label="Предыдущий">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <button type="button" class="cases-slider-next" aria-label="Следующий">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                </div>
+            </div>
             <div class="cases-slider-wrap">
                 <div class="swiper cases-slider">
                     <div class="swiper-wrapper">
@@ -715,13 +732,23 @@ $img = esc_url( get_template_directory_uri() ) . '/img/';
                                 </a>
                             </span>
                         </li>
-                        <li class="geo__item">
-                            <span class="geo__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></span>
-                            <span class="geo__text">
-                                <a href="<?php echo esc_url( fp_get( 'geo_telegram_url', 'https://t.me/tg_id' ) ); ?>">
-                                    <?php fp_field( 'geo_telegram_label', 'Telegram: @tg_id' ); ?>
-                                </a>
-                            </span>
+                        <li class="geo__item geo__item_max">
+                            <a href="<?php echo esc_url( gs_telegram() ); ?>" target="_blank" class="geo__max-link" aria-label="МАХ">
+                                <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 1000 1000" width="48" height="48">
+                                    <defs>
+                                        <linearGradient id="geo-max-a">
+                                            <stop offset="0" stop-color="#4cf" />
+                                            <stop offset=".662" stop-color="#53e" />
+                                            <stop offset="1" stop-color="#93d" />
+                                        </linearGradient>
+                                        <linearGradient id="geo-max-c" x1="117.847" x2="1000" y1="760.536" y2="500" gradientUnits="userSpaceOnUse" href="#geo-max-a" />
+                                    </defs>
+                                    <rect width="1000" height="1000" fill="url(#geo-max-c)" ry="249.681" />
+                                    <path fill="#fff" fill-rule="evenodd"
+                                        d="M508.211 878.328c-75.007 0-109.864-10.95-170.453-54.75-38.325 49.275-159.686 87.783-164.979 21.9 0-49.456-10.95-91.248-23.36-136.873-14.782-56.21-31.572-118.807-31.572-209.508 0-216.626 177.754-379.597 388.357-379.597 210.785 0 375.947 171.001 375.947 381.604.707 207.346-166.595 376.118-373.94 377.224m3.103-571.585c-102.564-5.292-182.499 65.7-200.201 177.024-14.6 92.162 11.315 204.398 33.397 210.238 10.585 2.555 37.23-18.98 53.837-35.587a189.8 189.8 0 0 0 92.71 33.032c106.273 5.112 197.08-75.794 204.215-181.95 4.154-106.382-77.67-196.486-183.958-202.574Z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </a>
                         </li>
                     </ul>
 
@@ -793,7 +820,7 @@ $img = esc_url( get_template_directory_uri() ) . '/img/';
                         </label>
                         <label class="checkbox">
                             <input type="checkbox" name="telegram_pref" class="checkbox__input">
-                            <span class="checkbox__text">Удобно в Telegram</span>
+                            <span class="checkbox__text">Удобно в МАХ</span>
                         </label>
                     </div>
                     <button type="submit" class="cta__button button button_primary">Отправить заявку</button>

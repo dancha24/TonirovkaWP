@@ -337,7 +337,7 @@ class Okna_Leads {
                     <div class="okna-lead-detail-value"><?php echo $need_measure ? '✓ Да' : '— Нет'; ?></div>
                 </div>
                 <div class="okna-lead-detail-row">
-                    <div class="okna-lead-detail-label">Удобно в Telegram</div>
+                    <div class="okna-lead-detail-label">Удобно в МАХ</div>
                     <div class="okna-lead-detail-value"><?php echo $telegram_pref ? '✓ Да' : '— Нет'; ?></div>
                 </div>
                 <div class="okna-lead-detail-row">
@@ -411,7 +411,7 @@ class Okna_Leads {
         }
 
         if (isset($data['telegram_pref'])) {
-            $lines[] = 'Удобно в Telegram: ' . ($data['telegram_pref'] ? 'Да' : 'Нет');
+            $lines[] = 'Удобно в МАХ: ' . ($data['telegram_pref'] ? 'Да' : 'Нет');
         }
 
         if (!empty($data['width']) || !empty($data['height'])) {
@@ -801,7 +801,7 @@ class Okna_Leads {
         if (isset($data['comment'])) {
             $message .= "Комментарий: " . ($data['comment'] ?: '—') . "\n";
             $message .= "Нужен замер: " . (isset($data['need_measure']) && $data['need_measure'] ? 'Да' : 'Нет') . "\n";
-            $message .= "Удобно в Telegram: " . (isset($data['telegram_pref']) && $data['telegram_pref'] ? 'Да' : 'Нет') . "\n";
+            $message .= "Удобно в МАХ: " . (isset($data['telegram_pref']) && $data['telegram_pref'] ? 'Да' : 'Нет') . "\n";
         }
 
         // Данные для калькулятора
@@ -849,7 +849,7 @@ class Okna_Leads {
         if (isset($data['comment'])) {
             $message .= "📝 <b>Комментарий:</b> " . ($data['comment'] ?: '—') . "\n";
             $message .= "📏 <b>Нужен замер:</b> " . (isset($data['need_measure']) && $data['need_measure'] ? 'Да' : 'Нет') . "\n";
-            $message .= "✈️ <b>Удобно в Telegram:</b> " . (isset($data['telegram_pref']) && $data['telegram_pref'] ? 'Да' : 'Нет') . "\n";
+            $message .= "✈️ <b>Удобно в МАХ:</b> " . (isset($data['telegram_pref']) && $data['telegram_pref'] ? 'Да' : 'Нет') . "\n";
         }
 
         // Данные для калькулятора

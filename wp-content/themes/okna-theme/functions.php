@@ -82,6 +82,14 @@ function create_default_menus() {
     }
 }
 add_action( 'after_setup_theme', 'create_default_menus' );
+
+// Добавляем пункт "Заказать звонок" в мобильное меню (то же окно, что кнопка в шапке)
+add_filter( 'wp_nav_menu_items', function ( $items, $args ) {
+    if ( isset( $args->menu_class ) && $args->menu_class === 'header__list' ) {
+        $items .= '<li class="header__item"><a href="#" class="header__link js-consult-modal-open" role="button">Заказать звонок</a></li>';
+    }
+    return $items;
+}, 10, 2 );
 // Подключение класса заявок
 require_once get_template_directory() . '/includes/class-okna-leads.php';
 require_once get_template_directory() . '/includes/calc-page.php';

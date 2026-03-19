@@ -205,7 +205,7 @@
                 const checkboxText = cb.closest('.checkbox')?.querySelector('.checkbox__text')?.textContent;
                 if (checkboxText && checkboxText.includes('Нужен замер')) {
                     cb.name = 'need_measure';
-                } else if (checkboxText && checkboxText.includes('Telegram')) {
+                } else if (checkboxText && (checkboxText.includes('Telegram') || checkboxText.includes('МАХ'))) {
                     cb.name = 'telegram_pref';
                 }
             });
