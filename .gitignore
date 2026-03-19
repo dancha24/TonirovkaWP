@@ -1,6 +1,5 @@
 # Зависимости
 node_modules/
-vendor/
 
 # Системные файлы
 .DS_Store
