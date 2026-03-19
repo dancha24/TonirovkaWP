@@ -913,6 +913,80 @@
 		padding: 10px 0 !important;
 	}
 
+	/* Пункт «Заказать звонок»: скрыт на ПК, на мобилке — синяя кнопка */
+	@media (min-width: 961px) {
+		.header__item_call {
+			display: none !important;
+		}
+	}
+	@media (max-width: 960px) {
+		.header__item_call .header__link {
+			display: inline-block;
+			background-color: #0096d9;
+			color: #fff !important;
+			padding: 12px 24px;
+			border-radius: 12px;
+			font-weight: 500;
+			text-align: center;
+		}
+		.header__item_call .header__link:hover {
+			background-color: #0080bd;
+		}
+	}
+
+	/* Мобилка: одна кнопка звонка в шапке, телефон с номером только в меню (data-da) */
+	@media (max-width: 640px) {
+		.header__actions .header__phone {
+			display: none !important;
+		}
+	}
+
+	/* «Заказать звонок» в меню: скрыть на ПК, синяя кнопка на мобилке */
+	@media (min-width: 961px) {
+		.header__item_call {
+			display: none !important;
+		}
+	}
+	@media (max-width: 960px) {
+		.header__item_call .header__link {
+			display: inline-block;
+			background-color: #0096d9;
+			color: #fff !important;
+			padding: 12px 24px;
+			border-radius: 8px;
+			text-align: center;
+			font-weight: 500;
+			margin-top: 0.5rem;
+		}
+		.header__item_call .header__link:hover {
+			background-color: #007ab8;
+			color: #fff !important;
+		}
+	}
+
+	/* «Заказать звонок» в меню: скрыть на ПК, синяя кнопка на мобилке */
+	@media (min-width: 961px) {
+		.header__item_call {
+			display: none !important;
+		}
+	}
+	@media (max-width: 960px) {
+		.header__item_call .header__link {
+			display: inline-block;
+			background-color: #0096d9;
+			color: #fff !important;
+			padding: 12px 20px;
+			border-radius: 12px;
+			font-weight: 500;
+			text-align: center;
+			transition: background-color 0.2s ease;
+		}
+		.header__item_call .header__link:hover {
+			background-color: #0080bb;
+			color: #fff !important;
+		}
+	}
+
 	@media (max-width: 480px) {
 		.header {
 			padding: 8px 0 !important;

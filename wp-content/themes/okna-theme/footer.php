@@ -339,6 +339,11 @@ if (!defined('ABSPATH')) {
                 e.preventDefault();
                 openConsultModal();
             }
+            /* Шапка: на десктопе — модалка, на мобилке — tel: (звонок) */
+            if (e.target.closest('.js-header-cta') && window.innerWidth > 480) {
+                e.preventDefault();
+                openConsultModal();
+            }
             if (consultModal && consultModal.classList.contains('is-open') && (e.target.closest('.js-consult-modal-close') || e.target === consultModal)) {
                 e.preventDefault();
                 closeConsultModal();

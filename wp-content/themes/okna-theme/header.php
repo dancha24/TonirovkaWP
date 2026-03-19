@@ -38,10 +38,11 @@ if (!defined('ABSPATH')) {
                         ?>
                     </nav>
                     <div class="header__actions">
-                        <button type="button" class="button header__call-action header__call-action_calc js-consult-modal-open"
+                        <!-- Десктоп: клик → модалка; мобилка: клик → звонок tel: -->
+                        <a href="tel:<?php echo esc_attr( gs_phone() ); ?>" class="button header__call-action header__call-action_calc js-header-cta"
                             data-da=".header__actions,480,first" data-strapi="headerCtaText" aria-label="Заказать звонок">
                             <span data-strapi="headerCtaText">Заказать звонок</span>
-                        </button>
+                        </a>
                         <a href="tel:<?php echo gs_phone(); ?>" class="header__phone" data-da="#menu,640,last"
                             data-strapi="headerPhoneLink">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"

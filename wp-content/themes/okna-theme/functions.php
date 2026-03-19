@@ -86,7 +86,7 @@ add_action( 'after_setup_theme', 'create_default_menus' );
 // Добавляем пункт "Заказать звонок" в мобильное меню (то же окно, что кнопка в шапке)
 add_filter( 'wp_nav_menu_items', function ( $items, $args ) {
     if ( isset( $args->menu_class ) && $args->menu_class === 'header__list' ) {
-        $items .= '<li class="header__item"><a href="#" class="header__link js-consult-modal-open" role="button">Заказать звонок</a></li>';
+        $items .= '<li class="header__item header__item_call"><a href="#" class="header__link js-consult-modal-open" role="button">Заказать звонок</a></li>';
     }
     return $items;
 }, 10, 2 );
