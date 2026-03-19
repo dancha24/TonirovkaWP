@@ -6,8 +6,8 @@
 // ** Database settings ** //
 define( 'DB_NAME', 'u0949688_wp_tonirovka' );
 define( 'DB_USER', 'u0949688_daniil' );
-define( 'DB_PASSWORD', '4GA-rW6-qPH-vUF' );
-define( 'DB_HOST', 'localhost' );
+define( 'DB_PASSWORD', ',@V(~lE}=TGz' );
+define( 'DB_HOST', '31.31.198.229' );
 define( 'DB_CHARSET', 'utf8mb4' );
 define( 'DB_COLLATE', '' );
 
@@ -33,8 +33,24 @@ define( 'WP_DEBUG_DISPLAY', false );
 define( 'WP_MEMORY_LIMIT', '256M' );
 define( 'DISALLOW_FILE_EDIT', true ); // Отключает редактор файлов в админке
 
-define( 'WP_HOME',    'https://xn--c1ajfmabcc0byi.xn--p1ai' );
-define( 'WP_SITEURL', 'https://xn--c1ajfmabcc0byi.xn--p1ai' );
+// Разрешённые домены — сайт работает на обоих + localhost для Docker
+$allowed_hosts = [
+	'xn--c1ajfmabcc0byi.xn--p1ai',
+	'xn--e1aybc.xn--c1ajfmabcc0byi.xn--p1ai',
+	'oknaplenka.ru',
+	'localhost',
+	'127.0.0.1',
+];
+$host = $_SERVER['HTTP_HOST'] ?? '';
+$host_base = preg_replace( '/:\d+$/', '', $host );
+$base_url = ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http' ) . '://' . $host;
+if ( in_array( $host, $allowed_hosts, true ) || in_array( $host_base, $allowed_hosts, true ) ) {
+	define( 'WP_HOME',    $base_url );
+	define( 'WP_SITEURL', $base_url );
+} else {
+	define( 'WP_HOME',    'https://xn--c1ajfmabcc0byi.xn--p1ai' );
+	define( 'WP_SITEURL', 'https://xn--c1ajfmabcc0byi.xn--p1ai' );
+}
 
 
 /* That's all, stop editing! */

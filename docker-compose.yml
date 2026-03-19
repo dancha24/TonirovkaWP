@@ -1,0 +1,13 @@
+services:
+  wordpress:
+    image: wordpress:php8.2-apache
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - WORDPRESS_DB_HOST=31.31.198.229
+      - WORDPRESS_DB_NAME=u0949688_wp_tonirovka
+      - WORDPRESS_DB_USER=u0949688_daniil
+      - WORDPRESS_DB_PASSWORD=,@V(~lE}=TGz
+    restart: unless-stopped
