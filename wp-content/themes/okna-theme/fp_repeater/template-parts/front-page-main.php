@@ -498,17 +498,17 @@ $img = esc_url( get_template_directory_uri() ) . '/img/';
     <script>
         let currentStep = 1;
         const totalSteps = 4;
-        let qty = 0;
+        let qty = parseInt(document.getElementById("qtyVal")?.textContent || "0", 10) || 0;
         const minSize = 100;
         let stepAnimationLock = false;
         let categorySwiper = null;
         let stepsSwiper = null;
         const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-        const pricing = {
-            product: 3000, productOld: 8000,
-            services: { srv1: 0, srv2: 122, srv3: 290 }
-        };
-        renderFooter(); initSizeInputs(); initPricing(); initSwipers();
+        const WCA = window.WCA || {};
+        const minOrderRub = Number(WCA.base_price ?? 0) || 0;
+        const minOrderAreaM2 = Number(WCA.min_order_area_m2 ?? 0) || 0; // "до X м2"
+        const travelMkadRub = Number(WCA.travel_mkad_rub ?? 0) || 0;
+        renderFooter(); initSizeInputs(); initScaffoldOptions(); initServicesOptions(); initSwipers(); recalculate();
         window.addEventListener("load", initSwipers);
         function goToStep(step) {
             if (step<1||step>totalSteps||step===currentStep||stepAnimationLock) return;
@@ -534,17 +534,80 @@ $img = esc_url( get_template_directory_uri() ) . '/img/';
         function renderFooter(){const fa=document.getElementById("footerActions");fa.innerHTML="";if(currentStep===1){const btn=mkBtn("primary",'Выбрать объект для тонировки <span class="ico-arrow-right"></span>',()=>goToStep(2));fa.appendChild(btn);}else if(currentStep===4){const back=mkBtn("secondary",'<span class="ico-arrow-left"></span> Назад',()=>goToStep(currentStep-1));fa.appendChild(back);}else{const back=mkBtn("secondary",'<span class="ico-arrow-left"></span> Назад',()=>goToStep(currentStep-1));const labels=["","","Выбрать тип пленки","Подсчет"];const next=mkBtn("primary",labels[currentStep]+' <span class="ico-arrow-right"></span>',()=>goToStep(currentStep+1));fa.appendChild(back);fa.appendChild(next);}}
         function mkBtn(type,html,cb){const b=document.createElement("button");b.className="wcp-btn wcp-btn--"+type;b.type="button";b.innerHTML=html;b.onclick=cb;return b;}
         function initSwipers(){if(categorySwiper||stepsSwiper)return;if(typeof window.Swiper!=="function"){document.querySelectorAll(".wcp-slider__nav").forEach(b=>b.style.display="none");return;}document.querySelectorAll(".wcp-slider__nav").forEach(b=>b.style.display="");categorySwiper=new window.Swiper("#categorySlider",{watchOverflow:true,speed:500,spaceBetween:12,slidesPerView:"auto",navigation:{prevEl:".wcp-categories-prev",nextEl:".wcp-categories-next"},breakpoints:{921:{slidesPerView:3,allowTouchMove:false}}});stepsSwiper=new window.Swiper("#stepTabs",{watchOverflow:true,speed:500,slidesPerView:"auto",navigation:{prevEl:".wcp-steps-prev",nextEl:".wcp-steps-next"},spaceBetween:8,breakpoints:{921:{spaceBetween:20,slidesPerView:4,allowTouchMove:false}}});updateTabs(currentStep);}
-        function initSizeInputs(){["width","height"].forEach(id=>{const input=document.getElementById(id);if(!input)return;input.addEventListener("input",()=>{input.value=sanitizeSizeValue(input.value);toggleSizeError(input,!isValidSizeValue(input.value));});input.addEventListener("blur",()=>{if(!input.value){toggleSizeError(input,true);return;}if(!isValidSizeValue(input.value)){input.value=String(minSize);}toggleSizeError(input,false);});});}
+        function initSizeInputs(){["width","height"].forEach(id=>{const input=document.getElementById(id);if(!input)return;input.addEventListener("input",()=>{input.value=sanitizeSizeValue(input.value);toggleSizeError(input,!isValidSizeValue(input.value));recalculate();});input.addEventListener("blur",()=>{if(!input.value){toggleSizeError(input,true);recalculate();return;}if(!isValidSizeValue(input.value)){input.value=String(minSize);}toggleSizeError(input,false);recalculate();});});}
         function sanitizeSizeValue(v){return v.replace(/\D/g,"").slice(0,5);}
         function isValidSizeValue(v){const n=Number(v);return Number.isInteger(n)&&n>=minSize;}
         function toggleSizeError(input,isInvalid){const f=input.closest(".wcp-field");if(f)f.classList.toggle("wcp-field--invalid",isInvalid);}
         function validateSizeStep(){const w=document.getElementById("width"),h=document.getElementById("height"),inputs=[w,h];let ok=true;inputs.forEach(i=>{i.value=sanitizeSizeValue(i.value);const v=isValidSizeValue(i.value);toggleSizeError(i,!v);if(!v)ok=false;});if(!ok){const f=inputs.find(i=>!isValidSizeValue(i.value));if(f)f.focus();}return ok;}
-        function initPricing(){Object.keys(pricing.services).forEach(id=>{const cb=document.getElementById(id);if(cb)cb.addEventListener("change",updatePricing);});updatePricing();}
-        function updatePricing(){const st=Object.entries(pricing.services).reduce((s,[id,p])=>{const cb=document.getElementById(id);return cb&&cb.checked?s+p:s;},0);const total=pricing.product+st,old=pricing.productOld+st;document.getElementById("servicesPrice").textContent=formatPrice(st);document.getElementById("productPrice").textContent=formatPrice(pricing.product);document.getElementById("totalOldPrice").textContent=formatPrice(old);document.getElementById("totalPrice").innerHTML=formatPriceNumber(total)+" <span>₽</span>";}
+        function initScaffoldOptions(){
+            const masterCb=document.getElementById("wcpScaffold");
+            const subCbs=document.querySelectorAll(".wcp-scaffold-item--sub");
+            if(!masterCb) return;
+            const apply=()=>{
+                const enabled=!!masterCb.checked;
+                subCbs.forEach(cb=>{
+                    cb.disabled=!enabled;
+                    if(!enabled) cb.checked=false;
+                });
+                recalculate();
+            };
+            masterCb.addEventListener("change",apply);
+            subCbs.forEach(cb=>cb.addEventListener("change",apply));
+            apply();
+        }
+
+        function initServicesOptions(){
+            document.querySelectorAll(".wcp-service-checkbox").forEach(cb=>{
+                cb.addEventListener("change",recalculate);
+            });
+        }
+        function recalculate(){
+            const widthInput=document.getElementById("width");
+            const heightInput=document.getElementById("height");
+            const qtyEl=document.getElementById("qtyVal");
+            qty=parseInt(qtyEl?.textContent||"0",10)||0;
+            const widthMm=widthInput?Number(widthInput.value):0;
+            const heightMm=heightInput?Number(heightInput.value):0;
+            const areaM2=(widthMm>0&&heightMm>0)?(widthMm*heightMm/1_000_000):0;
+            const areaTotalM2=areaM2*qty;
+            const areaM2El=document.getElementById("areaM2Val");
+            if(areaM2El){
+                areaM2El.textContent=new Intl.NumberFormat("ru-RU",{maximumFractionDigits:2}).format(areaTotalM2);
+            }
+            const filmRateRubPerM2=getSelectedFilmRateRubPerM2();
+            let scaffoldRateSum=0;
+            document.querySelectorAll(".wcp-scaffold-item[data-affects-price='1']:checked").forEach(cb=>{
+                scaffoldRateSum += Number(cb.dataset.rate ?? 0) || 0;
+            });
+            const scaffoldRub=(scaffoldRateSum>0)?(areaM2*qty*scaffoldRateSum):0;
+            let servicesSumRub=0;
+            document.querySelectorAll(".wcp-service-checkbox:checked").forEach(cb=>{
+                servicesSumRub += Number(cb.dataset.price ?? 0) || 0;
+            });
+            let productRub=(areaM2*qty*filmRateRubPerM2)+scaffoldRub;
+            let totalRub=productRub+servicesSumRub;
+            if(areaTotalM2<=minOrderAreaM2 && totalRub<minOrderRub){
+                totalRub=minOrderRub;
+                productRub=Math.max(0,totalRub-servicesSumRub);
+            }
+            const oldRub=totalRub;
+            const servicesPriceEl=document.getElementById("servicesPrice");
+            const productPriceEl=document.getElementById("productPrice");
+            const totalOldPriceEl=document.getElementById("totalOldPrice");
+            const totalPriceEl=document.getElementById("totalPrice");
+            if(servicesPriceEl) servicesPriceEl.textContent=formatPrice(servicesSumRub);
+            if(productPriceEl) productPriceEl.textContent=formatPrice(Math.round(productRub));
+            if(totalOldPriceEl) totalOldPriceEl.textContent=formatPrice(Math.round(oldRub));
+            if(totalPriceEl) totalPriceEl.innerHTML=formatPriceNumber(Math.round(totalRub))+" <span>₽</span>";
+        }
+        function getSelectedFilmRateRubPerM2(){
+            const selectedFilm=document.querySelector("#filmOptions .wcp-option--selected");
+            return Number(selectedFilm?.dataset?.price ?? 0) || 0;
+        }
         function formatPrice(v){return formatPriceNumber(v)+" ₽";}
         function formatPriceNumber(v){return new Intl.NumberFormat("ru-RU").format(v);}
-        function changeQty(delta){qty=Math.max(0,qty+delta);document.getElementById("qtyVal").textContent=qty;}
-        function selectOption(el,group,price){const p=el.parentElement;p.querySelectorAll(".wcp-option").forEach(o=>o.classList.remove("wcp-option--selected"));el.classList.add("wcp-option--selected");}
+        function changeQty(delta){qty=Math.max(0,qty+delta);document.getElementById("qtyVal").textContent=qty;recalculate();}
+        function selectOption(el,group,price){const p=el.parentElement;p.querySelectorAll(".wcp-option").forEach(o=>o.classList.remove("wcp-option--selected"));el.classList.add("wcp-option--selected");if(group==="film") recalculate();}
         function selectCategory(el){document.querySelectorAll(".wcp-category").forEach(c=>c.classList.remove("wcp-category--active"));el.classList.add("wcp-category--active");if(categorySwiper){const slides=Array.from(document.querySelectorAll("#categorySlider .wcp-category"));const i=slides.indexOf(el);if(i>=0)categorySwiper.slideTo(i);}goToStep(1);}
     </script>
 

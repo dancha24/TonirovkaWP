@@ -10,7 +10,7 @@ function wca_defaults(): array
         'size_min'         => 100,
         'size_default_w'   => 100,
         'size_default_h'   => 100,
-        'size_default_qty' => 0,
+        'size_default_qty' => 1,
         'size_hint'        => 'При указании размера добавьте 2–3 см на монтаж с каждой стороны.',
 
         // Категории
@@ -28,15 +28,37 @@ function wca_defaults(): array
         ],
 
         'films' => [
-            ['name' => 'Атермальная',               'price' => 0, 'image' => ''],
-            ['name' => 'Зеркальная/односторонняя',  'price' => 0, 'image' => ''],
-            ['name' => 'Матовая/декор/блэкаут',     'price' => 0, 'image' => ''],
-            ['name' => 'Бронирующая/защитная',      'price' => 0, 'image' => ''],
+            ['name' => 'Атермальная',               'price' => 2500, 'image' => ''],
+            ['name' => 'Зеркальная/односторонняя',  'price' => 1600, 'image' => ''],
+            ['name' => 'Матовая/блэкаут',          'price' => 1750, 'image' => ''],
+            ['name' => 'Декор',                     'price' => 2800, 'image' => ''],
+            ['name' => 'Бронирующая/защитная',      'price' => 1600, 'image' => ''],
         ],
 
         // Шаг 4 — результат
-        'base_price'       => 3000,
-        'old_price'        => 8000,
+        'base_price'       => 16000,
+        'old_price'        => 16000,
+        // Параметры расчетов (задаются в админке)
+        'min_order_area_m2'=> 10,      // порог "до X м2" для минимального заказа
+        'travel_mkad_rub'  => 2000,   // выезд/доставка внутри МКАД
+        'scaffold_rate_rub_per_m2' => 300, // подмащивание: руб/м2
+        // Тексты пунктов "подмащивание" (для чекбоксов на шаге 1)
+        'scaffold_base_label' => '* работа с использованием средств подмащивания (лестница, стремянка и т.д) - {rate}р/м2',
+        'scaffold_height_gt2_label' => '* работа на высоте более 2-х метров с использованием средств подмащивания рассчитываются отдельно',
+        // Шаг 1 — подмащивание (набор пунктов в админке)
+        // Первый пункт используется как "основная" галочка (id=`wcpScaffold`), остальные зависят от неё.
+        'scaffold_items' => [
+            [
+                'label' => '* работа с использованием средств подмащивания (лестница, стремянка и т.д) - {rate}р/м2',
+                'rate' => 300,
+                'affects_price' => 1,
+            ],
+            [
+                'label' => '* работа на высоте более 2-х метров с использованием средств подмащивания рассчитываются отдельно',
+                'rate' => 0,
+                'affects_price' => 0,
+            ],
+        ],
         'gift_text'        => 'Мытьё окон в подарок',
         'btn_text'         => 'Быстрый заказ',
         'call_hint'        => 'Позвонить через 1 минуту',
@@ -61,7 +83,25 @@ function wca_defaults(): array
 function wca_get(): array
 {
     $saved = get_option('wca_settings', []);
-    return wp_parse_args($saved, wca_defaults());
+    $data = wp_parse_args($saved, wca_defaults());
+
+    // Миграция со старых ключей scaffold_* к новым scaffold_items (если scaffold_items в сохранённых настройках отсутствует).
+    if (!is_array($saved) || !array_key_exists('scaffold_items', $saved)) {
+        $data['scaffold_items'] = [
+            [
+                'label' => (string) ($data['scaffold_base_label'] ?? ''),
+                'rate' => (int) ($data['scaffold_rate_rub_per_m2'] ?? 0),
+                'affects_price' => 1,
+            ],
+            [
+                'label' => (string) ($data['scaffold_height_gt2_label'] ?? ''),
+                'rate' => 0,
+                'affects_price' => 0,
+            ],
+        ];
+    }
+
+    return $data;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -99,6 +139,11 @@ add_action('admin_post_wca_save', function () {
         'size_hint'        => sanitize_textarea_field($p['size_hint'] ?? ''),
         'base_price'       => absint($p['base_price'] ?? 0),
         'old_price'        => absint($p['old_price'] ?? 0),
+        'min_order_area_m2'=> absint($p['min_order_area_m2'] ?? 10),
+        'travel_mkad_rub'  => absint($p['travel_mkad_rub'] ?? 2000),
+        'scaffold_rate_rub_per_m2' => absint($p['scaffold_rate_rub_per_m2'] ?? 300),
+        'scaffold_base_label' => sanitize_text_field($p['scaffold_base_label'] ?? wca_defaults()['scaffold_base_label']),
+        'scaffold_height_gt2_label' => sanitize_text_field($p['scaffold_height_gt2_label'] ?? wca_defaults()['scaffold_height_gt2_label']),
         'gift_text'        => sanitize_text_field($p['gift_text'] ?? ''),
         'btn_text'         => sanitize_text_field($p['btn_text'] ?? ''),
         'call_hint'        => sanitize_text_field($p['call_hint'] ?? ''),
@@ -145,6 +190,34 @@ add_action('admin_post_wca_save', function () {
             'hint'       => sanitize_text_field($srv['hint'] ?? ''),
             'price_text' => sanitize_text_field($srv['price_text'] ?? ''),
             'checked'    => isset($srv['checked']) ? 1 : 0,
+        ];
+    }
+
+    // Подмащивание (шаг 1) — набор пунктов
+    $data['scaffold_items'] = [];
+    foreach ((array) ($p['scaffold_items'] ?? []) as $it) {
+        $label = sanitize_text_field($it['label'] ?? '');
+        if ($label === '') continue;
+        $rate = absint($it['rate'] ?? 0);
+        $affects = absint($it['affects_price'] ?? 0);
+        $data['scaffold_items'][] = [
+            'label'         => $label,
+            'rate'          => $rate,
+            'affects_price' => $affects ? 1 : 0,
+        ];
+    }
+    if (empty($data['scaffold_items'])) {
+        $data['scaffold_items'] = [
+            [
+                'label' => (string) ($data['scaffold_base_label'] ?? ''),
+                'rate' => (int) ($data['scaffold_rate_rub_per_m2'] ?? 0),
+                'affects_price' => 1,
+            ],
+            [
+                'label' => (string) ($data['scaffold_height_gt2_label'] ?? ''),
+                'rate' => 0,
+                'affects_price' => 0,
+            ],
         ];
     }
 
@@ -409,6 +482,31 @@ function wca_render_page(): void
                         <textarea name="size_hint"><?php echo esc_textarea($s['size_hint']); ?></textarea>
                     </div>
                 </div>
+                <div class="wca-grid" style="margin-top:12px;">
+                    <div class="wca-field">
+                        <label>Подмащивание: пункты (шаг 1)</label>
+                        <div class="wca-hint" style="margin-top:-4px; font-size:12px; color:#666;">
+                            Первый пункт — основная галочка. Остальные зависят от неё и отключаются, пока она не выбрана.
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top:12px;">
+                    <div class="wca-repeater" id="rep-scaffold_items">
+                        <?php foreach (($s['scaffold_items'] ?? []) as $i => $it): ?>
+                            <div class="wca-repeater-row">
+                                <span class="handle">⠿</span>
+                                <span class="wca-lbl">Текст пункта (шаблон {rate})</span>
+                                <input type="text" name="scaffold_items[<?php echo $i; ?>][label]" value="<?php echo esc_attr($it['label'] ?? ''); ?>">
+                                <span class="wca-lbl">Коэффициент ₽/м2</span>
+                                <input type="number" name="scaffold_items[<?php echo $i; ?>][rate]" value="<?php echo esc_attr($it['rate'] ?? 0); ?>" min="0">
+                                <span class="wca-lbl">Учитывать в цене (0/1)</span>
+                                <input type="number" name="scaffold_items[<?php echo $i; ?>][affects_price]" value="<?php echo esc_attr($it['affects_price'] ?? 0); ?>" min="0" max="1" step="1">
+                                <button type="button" class="wca-remove-btn" onclick="wca_remove(this)">✕</button>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <button type="button" class="wca-add-btn" onclick="wca_add('scaffold_items', ['label','rate','affects_price'], ['Новый пункт', 0, 0])">+ Добавить пункт</button>
+                </div>
             </div>
 
             <!-- ═══════════════════════════════════════════ -->
@@ -466,7 +564,7 @@ function wca_render_page(): void
 
                             <span class="wca-lbl">Название</span>
                             <input type="text" name="films[<?php echo $i; ?>][name]" value="<?php echo esc_attr($film['name']); ?>">
-                            <span class="wca-lbl">Надбавка ₽</span>
+                            <span class="wca-lbl">Цена ₽/м2</span>
                             <input type="number" name="films[<?php echo $i; ?>][price]" value="<?php echo esc_attr($film['price']); ?>" min="0">
                             <button type="button" class="wca-remove-btn" onclick="wca_remove(this)">✕</button>
                         </div>
@@ -502,6 +600,16 @@ function wca_render_page(): void
                     <div class="wca-field">
                         <label>Подпись под кнопкой</label>
                         <input type="text" name="call_hint" value="<?php echo esc_attr($s['call_hint']); ?>">
+                    </div>
+                </div>
+                <div class="wca-grid" style="margin-top:12px;">
+                    <div class="wca-field">
+                        <label>Порог минимального заказа (м2)</label>
+                        <input type="number" name="min_order_area_m2" value="<?php echo esc_attr($s['min_order_area_m2']); ?>" min="0" step="0.1">
+                    </div>
+                    <div class="wca-field">
+                        <label>Выезд/доставка внутри МКАД ₽</label>
+                        <input type="number" name="travel_mkad_rub" value="<?php echo esc_attr($s['travel_mkad_rub']); ?>" min="0">
                     </div>
                 </div>
             </div>
@@ -585,10 +693,10 @@ function wca_render_page(): void
 
             let html = '<span class="handle">⠿</span>';
             fields.forEach((f, i) => {
-                const type = (f === 'price') ? 'number' : 'text';
-                const extra = (f === 'price') ? '' : '';
-                html += `<span class="wca-lbl">${wca_label(f)}</span>
-                     <input type="${type}" name="${key}[${idx}][${f}]" value="${defaults[i]}"${f==='price'?' min="0"':''}>`;
+                const type = (f === 'price' || f === 'rate' || f === 'affects_price') ? 'number' : 'text';
+                const attrs = (f === 'affects_price') ? ' min="0" max="1" step="1"' : ((f === 'price' || f === 'rate') ? ' min="0"' : '');
+                html += `<span class="wca-lbl">${wca_label(key, f)}</span>
+                     <input type="${type}" name="${key}[${idx}][${f}]" value="${defaults[i]}"${attrs}>`;
             });
             html += '<button type="button" class="wca-remove-btn" onclick="wca_remove(this)">✕</button>';
             row.innerHTML = html;
@@ -615,12 +723,14 @@ function wca_render_page(): void
             rep.appendChild(row);
         }
 
-        function wca_label(f) {
+        function wca_label(key, f) {
             return {
                 name: 'Название',
-                price: 'Надбавка ₽',
+                price: key === 'films' ? 'Цена ₽/м2' : 'Надбавка ₽',
+                rate: 'Коэффициент ₽/м2',
                 hint: 'Подпись',
-                label: 'Название',
+                label: 'Текст пункта',
+                affects_price: 'Учитывать в цене (0/1)',
                 price_text: 'Цена'
             } [f] || f;
         }
@@ -769,12 +879,58 @@ function wca_render_calculator(): void
                             <button class="wcp-qty__btn" onclick="changeQty(1)">+</button>
                         </div>
                     </div>
+                    <div class="wcp-area-hint">
+                        Итого = <span id="areaM2Val">0</span> м<sup>2</sup>
+                    </div>
                     <div class="wcp-hint">
                         <div class="wcp-hint__head">
                             <div class="wcp-hint__icon">i</div>
                             Справка
                         </div>
                         <?php echo esc_html($s['size_hint']); ?>
+                    </div>
+                    <?php
+                    $scaffoldItems = is_array($s['scaffold_items'] ?? null) ? $s['scaffold_items'] : [];
+                    $master = $scaffoldItems[0] ?? null;
+                    $subs = array_slice($scaffoldItems, 1);
+                    ?>
+                    <div class="wcp-scaffold">
+                        <?php if ($master): ?>
+                            <?php
+                            $masterRate = (int) ($master['rate'] ?? 0);
+                            $masterAffects = (int) ($master['affects_price'] ?? 0);
+                            $masterLabel = (string) ($master['label'] ?? '');
+                            $masterLabel = str_replace('{rate}', (string) $masterRate, $masterLabel);
+                            ?>
+                            <label class="wcp-check">
+                                <input
+                                    type="checkbox"
+                                    id="wcpScaffold"
+                                    class="wcp-scaffold-item"
+                                    data-rate="<?php echo $masterRate; ?>"
+                                    data-affects-price="<?php echo $masterAffects; ?>">
+                                <span><?php echo esc_html($masterLabel); ?></span>
+                            </label>
+                        <?php endif; ?>
+
+                        <?php foreach ($subs as $idx => $it): ?>
+                            <?php
+                            $rate = (int) ($it['rate'] ?? 0);
+                            $affects = (int) ($it['affects_price'] ?? 0);
+                            $labelTpl = (string) ($it['label'] ?? '');
+                            $label = str_replace('{rate}', (string) $rate, $labelTpl);
+                            ?>
+                            <label class="wcp-check wcp-check--sub">
+                                <input
+                                    type="checkbox"
+                                    class="wcp-scaffold-item wcp-scaffold-item--sub"
+                                    id="wcpScaffoldSub<?php echo (int) $idx; ?>"
+                                    disabled
+                                    data-rate="<?php echo $rate; ?>"
+                                    data-affects-price="<?php echo $affects; ?>">
+                                <span><?php echo esc_html($label); ?></span>
+                            </label>
+                        <?php endforeach; ?>
                     </div>
                 </div>
                 <div class="wcp-body__right">
@@ -790,6 +946,7 @@ function wca_render_calculator(): void
                         <?php foreach ($s['objects'] as $i => $obj): ?>
                             <div class="wcp-option <?php echo $i === 0 ? 'wcp-option--selected' : ''; ?>"
                                 data-img="<?php echo esc_url($img . '2-' . ($i + 1) . '.png'); ?>"
+                                data-price="<?php echo (int) $obj['price']; ?>"
                                 onclick="selectOption(this, 'object', <?php echo (int) $obj['price']; ?>)">
                                 <div class="wcp-option__icon" style="border-radius: 50%;">
                                     <img src="<?php echo esc_url($obj['image'] ?: $img . '2-' . ($i + 1) . '.png'); ?>" alt="">
@@ -801,6 +958,7 @@ function wca_render_calculator(): void
                             </div>
                         <?php endforeach; ?>
                     </div>
+                    <div class="wcp-step-note">* работа производится внутри помещения</div>
                 </div>
                 <div class="wcp-body__right">
                     <div class="wcp-img-placeholder" id="objectMainImg">
@@ -817,6 +975,7 @@ function wca_render_calculator(): void
                         <?php foreach ($s['films'] as $i => $film): ?>
                             <div class="wcp-option <?php echo $i === 0 ? 'wcp-option--selected' : ''; ?>"
                                 data-img="<?php echo esc_url($img . '3-' . ($i + 1) . '.png'); ?>"
+                                data-price="<?php echo (int) $film['price']; ?>"
                                 onclick="selectOption(this, 'film', <?php echo (int) $film['price']; ?>)">
                                 <div class="wcp-option__icon" style="border-radius:50%;">
                                     <img src="<?php echo esc_url($film['image'] ?: $img . '3-' . ($i + 1) . '.png'); ?>" alt="">
@@ -846,25 +1005,52 @@ function wca_render_calculator(): void
                         </div>
                     </div>
 
-                    <!--
+                    <?php
+                    $services = is_array($s['services'] ?? null) ? $s['services'] : [];
+                    $servicesDefaultSum = 0;
+                    foreach ($services as $srv) {
+                        $isChecked = !empty($srv['checked']);
+                        $priceText = (string) ($srv['price_text'] ?? '');
+                        $priceRub = 0;
+                        if (preg_match('/(\d[\d\s]*)/', $priceText, $m)) {
+                            $priceRub = (int) str_replace(' ', '', $m[1]);
+                        }
+                        if ($isChecked) $servicesDefaultSum += $priceRub;
+                    }
+                    ?>
                     <div class="wcp-services">
                         <div class="wcp-services__head">
-                            <span>Доп. услуги</span><span id="servicesPrice">0 ₽</span>
+                            <span>Доп. услуги</span>
+                            <span id="servicesPrice"><?php echo number_format((int) $servicesDefaultSum, 0, '', ' '); ?> ₽</span>
                         </div>
-                        <?php foreach ($s['services'] as $i => $srv): ?>
+                        <?php foreach ($services as $i => $srv): ?>
+                            <?php
+                            $priceText = (string) ($srv['price_text'] ?? '');
+                            $priceRub = 0;
+                            if (preg_match('/(\d[\d\s]*)/', $priceText, $m)) {
+                                $priceRub = (int) str_replace(' ', '', $m[1]);
+                            }
+                            $isChecked = !empty($srv['checked']);
+                            $label = (string) ($srv['label'] ?? '');
+                            $hint = (string) ($srv['hint'] ?? '');
+                            ?>
                             <div class="wcp-service-row">
-                                <input type="checkbox" id="srv<?php echo $i; ?>" <?php echo $srv['checked'] ? 'checked' : ''; ?>>
-                                <label class="wcp-service-row__label" for="srv<?php echo $i; ?>">
-                                    <?php echo esc_html($srv['label']); ?>
-                                    <?php if ($srv['hint']): ?>
-                                        <small>(<?php echo esc_html($srv['hint']); ?>)</small>
+                                <input
+                                    type="checkbox"
+                                    class="wcp-service-checkbox"
+                                    data-price="<?php echo (int) $priceRub; ?>"
+                                    <?php checked($isChecked); ?>
+                                    aria-label="<?php echo esc_attr($label); ?>">
+                                <span class="wcp-service-row__label">
+                                    * <?php echo esc_html($label); ?>
+                                    <?php if ($hint !== ''): ?>
+                                        <br><small><?php echo esc_html($hint); ?></small>
                                     <?php endif; ?>
-                                </label>
-                                <span class="wcp-service-row__price"><?php echo esc_html($srv['price_text']); ?></span>
+                                </span>
+                                <span class="wcp-service-row__price"><?php echo esc_html($priceText); ?></span>
                             </div>
                         <?php endforeach; ?>
                     </div>
-                    -->
 
                     <div class="wcp-total">
                         <div>

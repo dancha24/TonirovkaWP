@@ -939,6 +939,20 @@
 		.header__actions .header__phone {
 			display: none !important;
 		}
+
+	/* Мобилка: значок МАХ/мессенджера в шапке не прячем */
+	.header__actions {
+		overflow: visible;
+	}
+	.header__actions .header__social {
+		display: inline-flex !important;
+		align-items: center;
+		justify-content: center;
+	}
+	.header__actions .header__social svg {
+		width: 24px;
+		height: 24px;
+	}
 	}
 
 	/* «Заказать звонок» в меню: скрыть на ПК, синяя кнопка на мобилке */
@@ -3066,6 +3080,53 @@
   font-size: 13px;
   color: #555;
   line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* Расчет площади (шаг 1) */
+.wcp-area-hint{
+  color:#000;
+  font-size:16px;
+  line-height:1.3;
+  padding-top:8px;
+  padding-bottom:16px; /* снизу больше */
+  margin:0 0 18px 0;
+  font-weight:600;
+}
+
+/* Шаг 1: галочки по подмащиванию */
+.wcp-scaffold {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.wcp-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.wcp-check input[type="checkbox"] {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  accent-color: #2196f3;
+}
+
+.wcp-check--sub {
+  opacity: 0.98;
+}
+
+/* Шаг 2: пометка */
+.wcp-step-note {
+  font-size: 12px;
+  color: #888;
   margin-bottom: 20px;
 }
 
