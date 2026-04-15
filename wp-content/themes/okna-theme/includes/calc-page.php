@@ -791,7 +791,7 @@ function wca_render_calculator(): void
 ?>
     <div class="window-calc-page">
 
-        <h1 class="window-calc-page__title"><?php echo esc_html($s['page_title']); ?></h1>
+        <h2 class="window-calc-page__title"><?php echo esc_html($s['page_title']); ?></h2>
         <p class="window-calc-page__subtitle"><?php echo esc_html($s['page_subtitle']); ?></p>
 
         <!-- CATEGORY TABS -->
