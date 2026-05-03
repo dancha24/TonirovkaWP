@@ -5,7 +5,7 @@
 class Okna_Leads {
 
     private static $instance = null;
-    private const BITRIX_WEBHOOK_URL = 'https://metodika.bitrix24.ru/rest/6/38vum9y692tvnuu5/';
+    private const BITRIX_WEBHOOK_URL = 'https://b24-jr0zhx.bitrix24.ru/rest/13/ttti37pmmvfewfxw/';
     private const BITRIX_SOURCE_ID = 'UC_X3DK6R';
     private const BITRIX_DEPARTMENT_FIELD = 'UF_CRM_1662368942557';
     private const BITRIX_DEPARTMENT_VALUE = '988';
