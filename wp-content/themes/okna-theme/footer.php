@@ -193,16 +193,14 @@ if (!defined('ABSPATH')) {
                 var title = card.querySelector('.case__title')?.textContent.trim() || '';
                 var stats = card.querySelectorAll('.case__stat strong');
                 var obj = stats[0]?.textContent.trim() || '';
-                var district = stats[1]?.textContent.trim() || '';
-                var qty = stats[2]?.textContent.trim() || '';
-                var area = stats[3]?.textContent.trim() || '';
-                var term = stats[4]?.textContent.trim() || '';
+                var qty = stats[1]?.textContent.trim() || '';
+                var area = stats[2]?.textContent.trim() || '';
+                var term = stats[3]?.textContent.trim() || '';
                 var review = card.querySelector('.case__review-text')?.textContent.trim() || '';
 
                 if (titleEl) titleEl.textContent = title;
                 if (statsEl) statsEl.innerHTML =
                     '<div>Объект: <strong>' + obj + '</strong></div>' +
-                    '<div>Район: <strong>' + district + '</strong></div>' +
                     '<div>Кол-во: <strong>' + qty + '</strong></div>' +
                     '<div>Площадь: <strong>' + area + '</strong></div>' +
                     '<div>Срок: <strong>' + term + '</strong></div>';
@@ -618,13 +616,12 @@ if (!defined('ABSPATH')) {
             if (!modal || !card) return;
             var title = card.getAttribute('data-case-title') || '';
             var obj = card.getAttribute('data-case-object') || '';
-            var district = card.getAttribute('data-case-district') || '';
             var area = card.getAttribute('data-case-area') || '';
             var qty = card.getAttribute('data-case-qty') || '';
             var term = card.getAttribute('data-case-term') || '';
             var review = card.getAttribute('data-case-review') || '';
             if (titleEl) titleEl.textContent = title;
-            if (statsEl) statsEl.innerHTML = '<div>Объект: <strong>' + obj + '</strong></div><div>Район: <strong>' + district + '</strong></div><div>Кол-во: <strong>' + qty + '</strong></div><div>Площадь: <strong>' + area + '</strong></div><div>Срок: <strong>' + term + '</strong></div>';
+            if (statsEl) statsEl.innerHTML = '<div>Объект: <strong>' + obj + '</strong></div><div>Кол-во: <strong>' + qty + '</strong></div><div>Площадь: <strong>' + area + '</strong></div><div>Срок: <strong>' + term + '</strong></div>';
             if (reviewEl) reviewEl.textContent = review;
 
             // Собираем фото из карточки: «До» первым, «После» вторым

@@ -612,7 +612,6 @@ if (!function_exists('render_block_front_cases')) {
                             <?php foreach ($items as $case): ?>
                                 <div class="swiper-slide case" data-case-title="<?php echo esc_attr($case['title'] ?? ''); ?>"
                                     data-case-object="<?php echo esc_attr($case['object'] ?? ''); ?>"
-                                    data-case-district="<?php echo esc_attr($case['district'] ?? ''); ?>"
                                     data-case-area="<?php echo esc_attr($case['area'] ?? ''); ?>"
                                     data-case-qty="<?php echo esc_attr($case['qty'] ?? ''); ?>"
                                     data-case-term="<?php echo esc_attr($case['term'] ?? ''); ?>"
@@ -631,9 +630,6 @@ if (!function_exists('render_block_front_cases')) {
                                             <?php if (!empty($case['object'])): ?>
                                                 <div class="case__stat"><span>Объект:</span>
                                                     <strong><?php echo esc_html($case['object']); ?></strong></div><?php endif; ?>
-                                            <?php if (!empty($case['district'])): ?>
-                                                <div class="case__stat"><span>Район:</span>
-                                                    <strong><?php echo esc_html($case['district']); ?></strong></div><?php endif; ?>
                                             <?php if (!empty($case['qty'])): ?>
                                                 <div class="case__stat"><span>Кол-во:</span>
                                                     <strong><?php echo esc_html($case['qty']); ?></strong></div><?php endif; ?>
@@ -737,7 +733,7 @@ if (!function_exists('render_block_front_geo')) {
                                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                                         <circle cx="12" cy="10" r="3" />
                                     </svg></span><span
-                                    class="geo__text"><?php echo esc_html(okna_flex_sub('geo_address', '')); ?></span></li>
+                                    class="geo__text"><?php echo gs_address(); ?></span></li>
                             <li class="geo__item"><span class="geo__icon" aria-hidden="true"><svg width="20" height="20"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         stroke-linecap="round" stroke-linejoin="round">

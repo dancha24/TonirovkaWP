@@ -758,10 +758,11 @@ acf_add_local_field_group( [
         ],
         [
             'key'           => 'field_geo_address',
-            'label'         => 'Адрес',
+            'label'         => 'Адрес (не используется)',
             'name'          => 'geo_address',
             'type'          => 'text',
-            'default_value' => 'г. Москва, ул. Никольская, д.29',
+            'instructions'  => 'Адрес на сайте (футер и блок «Контакты») задаётся в Настройки сайта → Адрес.',
+            'default_value' => '',
         ],
         [
             'key'           => 'field_geo_hours',

@@ -633,7 +633,6 @@ $img = esc_url( get_template_directory_uri() ) . '/img/';
                         <?php foreach ( $fp_rows( 'cases_items', $d['cases_default'] ) as $case ) :
                             $c_title    = $case['title']    ?? '';
                             $c_object   = $case['object']   ?? '';
-                            $c_district = $case['district'] ?? '';
                             $c_qty      = $case['qty']      ?? '';
                             $c_area     = $case['area']     ?? '';
                             $c_term     = $case['term']     ?? '';
@@ -654,7 +653,6 @@ $img = esc_url( get_template_directory_uri() ) . '/img/';
                             <div class="swiper-slide case"
                                  data-case-title="<?php echo esc_attr( $c_title ); ?>"
                                  data-case-object="<?php echo esc_attr( $c_object ); ?>"
-                                 data-case-district="<?php echo esc_attr( $c_district ); ?>"
                                  data-case-area="<?php echo esc_attr( $c_area ); ?>"
                                  data-case-qty="<?php echo esc_attr( $c_qty ); ?>"
                                  data-case-term="<?php echo esc_attr( $c_term ); ?>"
@@ -667,7 +665,6 @@ $img = esc_url( get_template_directory_uri() ) . '/img/';
                                     <h3 class="case__title"><?php echo esc_html( $c_title ); ?></h3>
                                     <div class="case__stats">
                                         <?php if ( $c_object )   echo '<div class="case__stat"><span>Объект:</span> <strong>' . esc_html( $c_object ) . '</strong></div>'; ?>
-                                        <?php if ( $c_district ) echo '<div class="case__stat"><span>Район:</span> <strong>' . esc_html( $c_district ) . '</strong></div>'; ?>
                                         <?php if ( $c_qty )      echo '<div class="case__stat"><span>Кол-во:</span> <strong>' . esc_html( $c_qty ) . '</strong></div>'; ?>
                                         <?php if ( $c_area )     echo '<div class="case__stat"><span>Площадь:</span> <strong>' . esc_html( $c_area ) . '</strong></div>'; ?>
                                         <?php if ( $c_term )     echo '<div class="case__stat"><span>Срок:</span> <strong>' . esc_html( $c_term ) . '</strong></div>'; ?>
@@ -781,7 +778,7 @@ $img = esc_url( get_template_directory_uri() ) . '/img/';
                     <ul class="geo__list">
                         <li class="geo__item">
                             <span class="geo__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
-                            <span class="geo__text"><?php fp_field( 'geo_address', 'г. Москва, ул. Никольская, д.29' ); ?></span>
+                            <span class="geo__text"><?php echo gs_address(); ?></span>
                         </li>
                         <li class="geo__item">
                             <span class="geo__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
