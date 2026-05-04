@@ -283,15 +283,6 @@
           submitBtn.textContent = originalText;
         });
     });
-
-    // Открытие политики
-    const privacyLink = calcContainer.querySelector(".js-open-privacy");
-    if (privacyLink) {
-      privacyLink.addEventListener("click", function (e) {
-        e.preventDefault();
-        alert("Политика конфиденциальности (здесь должно быть модальное окно)");
-      });
-    }
   }
 
   // Запуск после загрузки DOM

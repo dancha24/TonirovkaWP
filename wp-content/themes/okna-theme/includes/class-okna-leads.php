@@ -433,27 +433,6 @@ class Okna_Leads {
             $lines[] = 'Файл с формы: ' . $data['photo_url'];
         }
 
-        $utmLabels = array(
-            'utm_source'   => 'UTM Source',
-            'utm_medium'   => 'UTM Medium',
-            'utm_campaign' => 'UTM Campaign',
-            'utm_content'  => 'UTM Content',
-            'utm_term'     => 'UTM Term',
-            'yclid'        => 'YCLID',
-        );
-
-        $hasAttribution = false;
-        foreach ($utmLabels as $key => $label) {
-            if (!empty($data[$key])) {
-                if (!$hasAttribution) {
-                    $lines[] = '';
-                    $lines[] = 'Маркетинговые данные:';
-                    $hasAttribution = true;
-                }
-                $lines[] = $label . ': ' . $data[$key];
-            }
-        }
-
         return implode("\n", array_filter($lines, static function($line) {
             return $line !== null;
         }));
@@ -535,9 +514,24 @@ class Okna_Leads {
         }
     }
 
+    private function build_bitrix_lead_title(array $data, int $post_id): string {
+        $name = isset($data['name']) ? trim((string) $data['name']) : '';
+        $phone = isset($data['phone']) ? trim((string) $data['phone']) : '';
+        if ($name !== '' && $phone !== '') {
+            return $name . ', ' . $phone;
+        }
+        if ($name !== '') {
+            return $name;
+        }
+        if ($phone !== '') {
+            return $phone;
+        }
+        return 'Заявка #' . $post_id;
+    }
+
     private function send_to_bitrix(int $post_id, array $data): array {
         $fields = array(
-            'TITLE' => sprintf('Лид с сайта тонировки: %s', $data['phone'] ?? $post_id),
+            'TITLE' => $this->build_bitrix_lead_title($data, $post_id),
             'NAME' => $data['name'] ?? 'Клиент',
             'SOURCE_ID' => self::BITRIX_SOURCE_ID,
             self::BITRIX_DEPARTMENT_FIELD => self::BITRIX_DEPARTMENT_VALUE,
