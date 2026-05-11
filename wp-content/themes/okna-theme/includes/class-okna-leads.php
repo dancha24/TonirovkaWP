@@ -9,7 +9,7 @@ class Okna_Leads {
     private const BITRIX_SOURCE_ID = 'UC_X3DK6R';
     private const BITRIX_DEPARTMENT_FIELD = 'UF_CRM_1662368942557';
     private const BITRIX_DEPARTMENT_VALUE = '988';
-    private const BITRIX_YCLID_FIELD = 'UF_CRM_1685353078';
+    private const BITRIX_YCLID_FIELD = 'UF_CRM_1777839930494';
     private const BITRIX_ASSIGNED_BY_ID = 4456;
     private const BITRIX_NEED_MEASURE_FIELD = 'UF_CRM_1773528405457';
     private const BITRIX_TELEGRAM_FIELD = 'UF_CRM_1773528414802';
