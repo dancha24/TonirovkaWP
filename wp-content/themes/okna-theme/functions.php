@@ -185,7 +185,7 @@ function okna_theme_enqueue_assets(): void
     wp_enqueue_script(
         'okna-cta-form',
         $theme_uri . '/js/lead-form.js',
-        [],
+        array('okna-metrika-goals'),
         $version,
         true
     );
@@ -194,7 +194,7 @@ function okna_theme_enqueue_assets(): void
     wp_enqueue_script(
         'okna-calc-lead-form',
         $theme_uri . '/js/calc-lead-form.js',
-        [],
+        array('okna-metrika-goals'),
         $version,
         true
     );

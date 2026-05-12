@@ -42,6 +42,46 @@
         }
     }
 
+    /**
+     * ClientID Метрики для сквозной аналитики с Битрикс24 (см. getClientID в справке Метрики).
+     * @param {FormData} formData
+     * @returns {Promise<void>}
+     */
+    function withMetrikaClientId(formData) {
+        return new Promise(function(resolve) {
+            if (!formData || typeof formData.append !== 'function') {
+                resolve();
+                return;
+            }
+            if (!counterId || typeof window.ym !== 'function') {
+                resolve();
+                return;
+            }
+
+            var settled = false;
+            function done() {
+                if (settled) {
+                    return;
+                }
+                settled = true;
+                resolve();
+            }
+
+            window.setTimeout(done, 2000);
+
+            try {
+                window.ym(counterId, 'getClientID', function(clientId) {
+                    if (clientId) {
+                        formData.append('metrika_client_id', String(clientId));
+                    }
+                    done();
+                });
+            } catch (err) {
+                done();
+            }
+        });
+    }
+
     function saveAttribution(data) {
         try {
             window.localStorage.setItem(attributionStorageKey, JSON.stringify(data));
@@ -153,7 +193,8 @@
         reachGoal: reachGoal,
         trackFormSuccess: trackFormSuccess,
         reindexForms: assignFormGoals,
-        getAttribution: getStoredAttribution
+        getAttribution: getStoredAttribution,
+        withMetrikaClientId: withMetrikaClientId
     };
 
     function init() {

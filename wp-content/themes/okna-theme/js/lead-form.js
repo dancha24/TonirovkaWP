@@ -111,11 +111,17 @@
         formData.append('nonce', oknaLead.nonce);
         formData.append('source', getFormSource(form));
         appendAttribution(formData);
-        
-        fetch(oknaLead.ajax_url, {
-            method: 'POST',
-            body: formData,
-            credentials: 'same-origin'
+
+        var clientIdPromise = (window.oknaMetrika && typeof window.oknaMetrika.withMetrikaClientId === 'function')
+            ? window.oknaMetrika.withMetrikaClientId(formData)
+            : Promise.resolve();
+
+        clientIdPromise.then(function() {
+            return fetch(oknaLead.ajax_url, {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            });
         })
         .then(response => response.json())
         .then(data => {

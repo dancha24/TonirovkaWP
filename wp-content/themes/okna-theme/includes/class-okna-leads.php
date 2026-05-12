@@ -9,7 +9,10 @@ class Okna_Leads {
     private const BITRIX_SOURCE_ID = 'UC_X3DK6R';
     private const BITRIX_DEPARTMENT_FIELD = 'UF_CRM_1662368942557';
     private const BITRIX_DEPARTMENT_VALUE = '988';
-    private const BITRIX_YCLID_FIELD = 'UF_CRM_1777839930494';
+    /** yclid из Директа — только если в Битрикс24 заведено отдельное UF (не ClientID Метрики). */
+    private const BITRIX_YCLID_FIELD = '';
+    /** ClientID Метрики (getClientID) — поле с символьным кодом вроде metrika_client_id для интеграции CRM. */
+    private const BITRIX_METRIKA_CLIENT_ID_FIELD = 'UF_CRM_1777839930494';
     private const BITRIX_ASSIGNED_BY_ID = 4456;
     private const BITRIX_NEED_MEASURE_FIELD = 'UF_CRM_1773528405457';
     private const BITRIX_TELEGRAM_FIELD = 'UF_CRM_1773528414802';
@@ -362,6 +365,7 @@ class Okna_Leads {
             'utm_content'  => $this->get_request_field('utm_content'),
             'utm_term'     => $this->get_request_field('utm_term'),
             'yclid'        => $this->get_request_field('yclid'),
+            'metrika_client_id' => $this->get_request_field('metrika_client_id'),
         );
     }
 
@@ -552,9 +556,8 @@ class Okna_Leads {
             }
         }
 
-        if (!empty($data['yclid'])) {
-            $fields[self::BITRIX_YCLID_FIELD] = $data['yclid'];
-        }
+        $this->add_bitrix_field($fields, self::BITRIX_YCLID_FIELD, $data['yclid'] ?? '');
+        $this->add_bitrix_field($fields, self::BITRIX_METRIKA_CLIENT_ID_FIELD, $data['metrika_client_id'] ?? '');
 
         $this->append_bitrix_custom_fields($fields, $data);
 
@@ -660,6 +663,7 @@ class Okna_Leads {
             '_lead_utm_content' => $attribution['utm_content'],
             '_lead_utm_term' => $attribution['utm_term'],
             '_lead_yclid' => $attribution['yclid'],
+            '_lead_metrika_client_id' => $attribution['metrika_client_id'],
         ));
 
         $bitrixResult = $this->send_to_bitrix($post_id, $leadData);
@@ -753,6 +757,7 @@ class Okna_Leads {
                 '_lead_utm_content' => $attribution['utm_content'],
                 '_lead_utm_term' => $attribution['utm_term'],
                 '_lead_yclid' => $attribution['yclid'],
+                '_lead_metrika_client_id' => $attribution['metrika_client_id'],
             ));
 
             $bitrixResult = $this->send_to_bitrix($post_id, $leadData);
