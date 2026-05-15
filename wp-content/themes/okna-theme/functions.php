@@ -91,6 +91,20 @@ add_filter( 'wp_nav_menu_items', function ( $items, $args ) {
     return $items;
 }, 10, 2 );
 
+// Clickfraud — антифрод-счётчик (в head)
+add_action( 'wp_head', function () {
+	?>
+<script>
+var _mtm = window._mtm = window._mtm || [];
+_mtm.push({ 'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start' });
+(function () {
+	var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+	g.src = 'https://stat1.clickfraud.ru/js/container_ZS0U9kk4.js'; s.parentNode.insertBefore(g, s);
+})();
+</script>
+	<?php
+}, 4 );
+
 // Calltouch — скрипт отслеживания (коллтрекинг, сквозная аналитика)
 add_action( 'wp_head', function () {
 	?>
